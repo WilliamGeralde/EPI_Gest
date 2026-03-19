@@ -2,8 +2,10 @@ import 'package:appwrite/appwrite.dart';
 import 'package:epi_gest_project/core/constants/appwrite_constants.dart';
 import 'package:epi_gest_project/data/services/base_repository.dart';
 import 'package:epi_gest_project/domain/models/organizational_structure/mapeamento_epi_model.dart';
+import 'package:epi_gest_project/domain/repositories/organizational_structure/mapeamento_epi_repository_contract.dart';
 
-class MapeamentoEpiRepository extends BaseRepository<MapeamentoEpiModel> {
+class MapeamentoEpiRepository extends BaseRepository<MapeamentoEpiModel>
+    implements MapeamentoEpiRepositoryContract {
   MapeamentoEpiRepository(TablesDB databases)
     : super(databases, AppwriteConstants.databaseMapeamentoEpi);
 
@@ -12,6 +14,7 @@ class MapeamentoEpiRepository extends BaseRepository<MapeamentoEpiModel> {
     return MapeamentoEpiModel.fromMap(map);
   }
 
+  @override
   Future<List<MapeamentoEpiModel>> getAllMapeamentos() async {
     try {
       return await getAll([

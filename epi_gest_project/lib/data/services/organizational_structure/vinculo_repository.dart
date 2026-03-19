@@ -2,8 +2,9 @@ import 'package:appwrite/appwrite.dart';
 import 'package:epi_gest_project/core/constants/appwrite_constants.dart';
 import 'package:epi_gest_project/data/services/base_repository.dart';
 import 'package:epi_gest_project/domain/models/organizational_structure/vinculo_model.dart';
+import 'package:epi_gest_project/domain/repositories/organizational_structure/vinculo_repository_contract.dart';
 
-class VinculoRepository extends BaseRepository<VinculoModel> {
+class VinculoRepository extends BaseRepository<VinculoModel> implements VinculoRepositoryContract {
   VinculoRepository(TablesDB databases)
       : super(databases, AppwriteConstants.databaseVinculo);
 
@@ -12,7 +13,13 @@ class VinculoRepository extends BaseRepository<VinculoModel> {
     return VinculoModel.fromMap(map);
   }
 
+  @override
   Future<List<VinculoModel>> getAllVinculos() async {
     return await getAll([]);
+  }
+
+  @override
+  Future<VinculoModel> createVinculo(VinculoModel vinculo) {
+    return create(vinculo);
   }
 }

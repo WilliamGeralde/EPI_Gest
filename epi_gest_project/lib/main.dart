@@ -21,9 +21,16 @@ import 'package:epi_gest_project/data/services/product_technical_registration/ma
 import 'package:epi_gest_project/data/services/product_technical_registration/medida_repository.dart';
 import 'package:epi_gest_project/domain/repositories/funcionarios/funcionario_repository_contract.dart';
 import 'package:epi_gest_project/domain/repositories/funcionarios/mapeamento_funcionario_repository_contract.dart';
+import 'package:epi_gest_project/domain/repositories/organizational_structure/mapeamento_epi_repository_contract.dart';
+import 'package:epi_gest_project/domain/repositories/organizational_structure/turno_repository_contract.dart';
+import 'package:epi_gest_project/domain/repositories/organizational_structure/unidade_repository_contract.dart';
+import 'package:epi_gest_project/domain/repositories/organizational_structure/vinculo_repository_contract.dart';
 import 'package:epi_gest_project/domain/use_cases/funcionarios/ativar_funcionario_use_case.dart';
 import 'package:epi_gest_project/domain/use_cases/funcionarios/buscar_mapeamento_funcionario_use_case.dart';
+import 'package:epi_gest_project/domain/use_cases/funcionarios/carregar_dados_auxiliares_funcionario_use_case.dart';
 import 'package:epi_gest_project/domain/use_cases/funcionarios/carregar_dados_funcionarios_use_case.dart';
+import 'package:epi_gest_project/domain/use_cases/funcionarios/criar_turno_auxiliar_funcionario_use_case.dart';
+import 'package:epi_gest_project/domain/use_cases/funcionarios/criar_vinculo_auxiliar_funcionario_use_case.dart';
 import 'package:epi_gest_project/domain/use_cases/funcionarios/filtrar_funcionarios_use_case.dart';
 import 'package:epi_gest_project/domain/use_cases/funcionarios/inativar_funcionario_use_case.dart';
 import 'package:epi_gest_project/domain/use_cases/funcionarios/salvar_funcionario_use_case.dart';
@@ -53,6 +60,12 @@ void main() {
           update: (context, repository, previous) => repository,
         ),
         ProxyProvider<MapeamentoFuncionarioRepository, MapeamentoFuncionarioRepositoryContract>(
+          update: (context, repository, previous) => repository,
+        ),
+        ProxyProvider<TurnoRepository, TurnoRepositoryContract>(
+          update: (context, repository, previous) => repository,
+        ),
+        ProxyProvider<VinculoRepository, VinculoRepositoryContract>(
           update: (context, repository, previous) => repository,
         ),
         ProxyProvider2<
@@ -92,45 +105,6 @@ void main() {
           update: (context, repository, previous) =>
               SalvarMapeamentoFuncionarioUseCase(repository),
         ),
-        ProxyProvider4<
-            CarregarDadosFuncionariosUseCase,
-            FiltrarFuncionariosUseCase,
-            InativarFuncionarioUseCase,
-            AtivarFuncionarioUseCase,
-            EmployeesPageController>(
-          update: (
-            context,
-            carregarDadosUseCase,
-            filtrarFuncionariosUseCase,
-            inativarFuncionarioUseCase,
-            ativarFuncionarioUseCase,
-            previous,
-          ) =>
-              EmployeesPageController(
-            carregarDadosUseCase: carregarDadosUseCase,
-            filtrarFuncionariosUseCase: filtrarFuncionariosUseCase,
-            inativarFuncionarioUseCase: inativarFuncionarioUseCase,
-            ativarFuncionarioUseCase: ativarFuncionarioUseCase,
-          ),
-        ),
-        ProxyProvider3<
-            SalvarFuncionarioUseCase,
-            BuscarMapeamentoFuncionarioUseCase,
-            SalvarMapeamentoFuncionarioUseCase,
-            EmployeeCoreController>(
-          update: (
-            context,
-            salvarFuncionarioUseCase,
-            buscarMapeamentoUseCase,
-            salvarMapeamentoUseCase,
-            previous,
-          ) =>
-              EmployeeCoreController(
-            salvarFuncionarioUseCase: salvarFuncionarioUseCase,
-            buscarMapeamentoUseCase: buscarMapeamentoUseCase,
-            salvarMapeamentoUseCase: salvarMapeamentoUseCase,
-          ),
-        ),
         Provider<EpiRepository>(create: (_) => EpiRepository(databases)),
 
         Provider<EntradasEpiRepository>(create: (_) => EntradasEpiRepository(databases)),
@@ -159,12 +133,96 @@ void main() {
         Provider<CargoRepository>(create: (_) => CargoRepository(databases)),
         Provider<RiscosRepository>(create: (_) => RiscosRepository(databases)),
         Provider<MapeamentoEpiRepository>(create: (_) => MapeamentoEpiRepository(databases)),
+        ProxyProvider<UnidadeRepository, UnidadeRepositoryContract>(
+          update: (context, repository, previous) => repository,
+        ),
+        ProxyProvider<MapeamentoEpiRepository, MapeamentoEpiRepositoryContract>(
+          update: (context, repository, previous) => repository,
+        ),
         Provider<CategoriaRepository>(create: (_) => CategoriaRepository(databases)),
 
         Provider<MarcasRepository>(create: (_) => MarcasRepository(databases)),
         Provider<MedidaRepository>(create: (_) => MedidaRepository(databases)),
         Provider<FornecedorRepository>(create: (_) => FornecedorRepository(databases)),
         Provider<ArmazemRepository>(create: (_) => ArmazemRepository(databases)),
+
+        ProxyProvider4<
+            TurnoRepositoryContract,
+            VinculoRepositoryContract,
+            MapeamentoEpiRepositoryContract,
+            UnidadeRepositoryContract,
+            CarregarDadosAuxiliaresFuncionarioUseCase>(
+          update: (
+            context,
+            turnoRepository,
+            vinculoRepository,
+            mapeamentoRepository,
+            unidadeRepository,
+            previous,
+          ) =>
+              CarregarDadosAuxiliaresFuncionarioUseCase(
+            turnoRepository,
+            vinculoRepository,
+            mapeamentoRepository,
+            unidadeRepository,
+          ),
+        ),
+        ProxyProvider<VinculoRepositoryContract, CriarVinculoAuxiliarFuncionarioUseCase>(
+          update: (context, repository, previous) =>
+              CriarVinculoAuxiliarFuncionarioUseCase(repository),
+        ),
+        ProxyProvider<TurnoRepositoryContract, CriarTurnoAuxiliarFuncionarioUseCase>(
+          update: (context, repository, previous) =>
+              CriarTurnoAuxiliarFuncionarioUseCase(repository),
+        ),
+        ProxyProvider4<
+            CarregarDadosFuncionariosUseCase,
+            FiltrarFuncionariosUseCase,
+            InativarFuncionarioUseCase,
+            AtivarFuncionarioUseCase,
+            EmployeesPageController>(
+          update: (
+            context,
+            carregarDadosUseCase,
+            filtrarFuncionariosUseCase,
+            inativarFuncionarioUseCase,
+            ativarFuncionarioUseCase,
+            previous,
+          ) =>
+              EmployeesPageController(
+            carregarDadosUseCase: carregarDadosUseCase,
+            filtrarFuncionariosUseCase: filtrarFuncionariosUseCase,
+            inativarFuncionarioUseCase: inativarFuncionarioUseCase,
+            ativarFuncionarioUseCase: ativarFuncionarioUseCase,
+          ),
+        ),
+        ProxyProvider6<
+            SalvarFuncionarioUseCase,
+            BuscarMapeamentoFuncionarioUseCase,
+            SalvarMapeamentoFuncionarioUseCase,
+            CarregarDadosAuxiliaresFuncionarioUseCase,
+            CriarVinculoAuxiliarFuncionarioUseCase,
+            CriarTurnoAuxiliarFuncionarioUseCase,
+            EmployeeCoreController>(
+          update: (
+            context,
+            salvarFuncionarioUseCase,
+            buscarMapeamentoUseCase,
+            salvarMapeamentoUseCase,
+            carregarDadosAuxiliaresUseCase,
+            criarVinculoUseCase,
+            criarTurnoUseCase,
+            previous,
+          ) =>
+              EmployeeCoreController(
+            salvarFuncionarioUseCase: salvarFuncionarioUseCase,
+            buscarMapeamentoUseCase: buscarMapeamentoUseCase,
+            salvarMapeamentoUseCase: salvarMapeamentoUseCase,
+            carregarDadosAuxiliaresUseCase: carregarDadosAuxiliaresUseCase,
+            criarVinculoUseCase: criarVinculoUseCase,
+            criarTurnoUseCase: criarTurnoUseCase,
+          ),
+        ),
 
         ChangeNotifierProvider(create: (_) => ThemeNotifier()),
       ],

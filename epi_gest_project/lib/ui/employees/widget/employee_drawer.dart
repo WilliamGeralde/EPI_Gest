@@ -1,7 +1,3 @@
-import 'package:epi_gest_project/data/services/organizational_structure/mapeamento_epi_repository.dart';
-import 'package:epi_gest_project/data/services/organizational_structure/turno_repository.dart';
-import 'package:epi_gest_project/data/services/organizational_structure/unidade_repository.dart';
-import 'package:epi_gest_project/data/services/organizational_structure/vinculo_repository.dart';
 import 'package:epi_gest_project/domain/models/funcionarios/funcionario_model.dart';
 import 'package:epi_gest_project/domain/models/organizational_structure/mapeamento_epi_model.dart';
 import 'package:epi_gest_project/domain/models/funcionarios/mapeamento_funcionario_model.dart';
@@ -121,27 +117,11 @@ class _EmployeeDrawerState extends State<EmployeeDrawer>
     if (!mounted) return;
 
     try {
-      final turnoRepo = Provider.of<TurnoRepository>(context, listen: false);
-      final vinculoRepo = Provider.of<VinculoRepository>(
-        context,
-        listen: false,
-      );
-      final mapRepo = Provider.of<MapeamentoEpiRepository>(
-        context,
-        listen: false,
-      );
-      final unitRepo = Provider.of<UnidadeRepository>(context, listen: false);
       final coreController = Provider.of<EmployeeCoreController>(
         context,
         listen: false,
       );
-
-      final results = await Future.wait([
-        turnoRepo.getAllTurnos(),
-        vinculoRepo.getAllVinculos(),
-        mapRepo.getAllMapeamentos(),
-        unitRepo.getAllUnidades(),
-      ]);
+      final result = await coreController.carregarDadosAuxiliares();
 
       if (!mounted) return;
 
@@ -152,16 +132,15 @@ class _EmployeeDrawerState extends State<EmployeeDrawer>
       }
 
       setState(() {
-        _turnosDisponiveis = results[0] as List<TurnoModel>;
-        _vinculosDisponiveis = results[1] as List<VinculoModel>;
-        final allMappings = results[2] as List<MapeamentoEpiModel>;
+        _turnosDisponiveis = result.turnos;
+        _vinculosDisponiveis = result.vinculos;
+        _mapeamentosDisponiveis =
+            coreController.filtrarMapeamentosDisponiveis(
+              mapeamentos: result.mapeamentos,
+              currentVinculo: _currentVinculo,
+            );
 
-        _mapeamentosDisponiveis = allMappings.where((m) {
-          final isCurrent = _currentVinculo?.mapeamento.id == m.id;
-          return m.status == true || isCurrent;
-        }).toList();
-
-        _unidadesDisponiveis = results[3] as List<UnidadeModel>;
+        _unidadesDisponiveis = result.unidades;
 
         _turnosSugestoes = _turnosDisponiveis.map((t) => t.turno).toList();
         _vinculosSugestoes = _vinculosDisponiveis
@@ -327,14 +306,15 @@ class _EmployeeDrawerState extends State<EmployeeDrawer>
       return;
     }
 
-    final repo = Provider.of<VinculoRepository>(context, listen: false);
+    final coreController = Provider.of<EmployeeCoreController>(
+      context,
+      listen: false,
+    );
     try {
       Navigator.pop(dialogContext); // Fecha modal
       setState(() => _isLoading = true); // Mostra loading no drawer
 
-      final novoVinculo = VinculoModel(nomeVinculo: nome);
-
-      final created = await repo.create(novoVinculo);
+      final created = await coreController.criarVinculo(nome);
 
       setState(() {
         _vinculosDisponiveis.add(created);
@@ -530,20 +510,21 @@ class _EmployeeDrawerState extends State<EmployeeDrawer>
       return;
     }
 
-    final repo = Provider.of<TurnoRepository>(context, listen: false);
+    final coreController = Provider.of<EmployeeCoreController>(
+      context,
+      listen: false,
+    );
     try {
       Navigator.pop(dialogContext);
       setState(() => _isLoading = true);
 
-      final novoTurno = TurnoModel(
-        turno: nome,
+      final created = await coreController.criarTurno(
+        nomeTurno: nome,
         horaEntrada: _tempEntrada.format(context),
         horaSaida: _tempSaida.format(context),
         inicioAlmoco: _tempAlmocoInicio.format(context),
-        fimAlomoco: _tempAlmocoFim.format(context),
+        fimAlmoco: _tempAlmocoFim.format(context),
       );
-
-      final created = await repo.create(novoTurno);
 
       setState(() {
         _turnosDisponiveis.add(created);

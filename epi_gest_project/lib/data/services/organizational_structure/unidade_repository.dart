@@ -2,8 +2,10 @@ import 'package:appwrite/appwrite.dart';
 import 'package:epi_gest_project/core/constants/appwrite_constants.dart';
 import 'package:epi_gest_project/data/services/base_repository.dart';
 import 'package:epi_gest_project/domain/models/organizational_structure/unidade_model.dart';
+import 'package:epi_gest_project/domain/repositories/organizational_structure/unidade_repository_contract.dart';
 
-class UnidadeRepository extends BaseRepository<UnidadeModel> {
+class UnidadeRepository extends BaseRepository<UnidadeModel>
+    implements UnidadeRepositoryContract {
   UnidadeRepository(TablesDB databases)
     : super(databases, AppwriteConstants.databaseLocalTrabalho);
 
@@ -12,6 +14,7 @@ class UnidadeRepository extends BaseRepository<UnidadeModel> {
     return UnidadeModel.fromMap(map);
   }
 
+  @override
   Future<List<UnidadeModel>> getAllUnidades() async {
     return await getAll([]);
   }
