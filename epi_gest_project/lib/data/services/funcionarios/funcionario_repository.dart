@@ -1,9 +1,11 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:epi_gest_project/domain/models/funcionarios/funcionario_model.dart';
+import 'package:epi_gest_project/domain/repositories/funcionarios/funcionario_repository_contract.dart';
 import '../base_repository.dart';
 import '../../../core/constants/appwrite_constants.dart';
 
-class FuncionarioRepository extends BaseRepository<FuncionarioModel> {
+class FuncionarioRepository extends BaseRepository<FuncionarioModel>
+    implements FuncionarioRepositoryContract {
   FuncionarioRepository(TablesDB databases)
     : super(databases, AppwriteConstants.databaseFuncionarios);
 
@@ -12,6 +14,7 @@ class FuncionarioRepository extends BaseRepository<FuncionarioModel> {
     return FuncionarioModel.fromMap(map);
   }
 
+  @override
   Future<List<FuncionarioModel>> getAllFuncionarios() async {
     try {
       return await getAll([
@@ -35,6 +38,22 @@ class FuncionarioRepository extends BaseRepository<FuncionarioModel> {
     }
   }
 
+  @override
+  Future<FuncionarioModel> createFuncionario(FuncionarioModel funcionario) {
+    return create(funcionario);
+  }
+
+  @override
+  Future<FuncionarioModel> updateFuncionario(FuncionarioModel funcionario) {
+    final id = funcionario.id;
+    if (id == null || id.isEmpty) {
+      throw Exception('Funcionario sem id para atualizacao.');
+    }
+
+    return update(id, funcionario.toMap());
+  }
+
+  @override
   Future<void> inactivateEmployee(String rowId, {String? motivo}) async {
     try {
       await update(rowId, {
@@ -47,6 +66,7 @@ class FuncionarioRepository extends BaseRepository<FuncionarioModel> {
     }
   }
 
+  @override
   Future<void> activateEmployee(String rowId) async {
     try {
       await update(rowId, {

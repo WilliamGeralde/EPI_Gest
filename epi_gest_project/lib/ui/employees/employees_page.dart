@@ -1,9 +1,6 @@
-import 'package:appwrite/appwrite.dart';
-import 'package:epi_gest_project/data/services/funcionarios/funcionario_repository.dart';
-import 'package:epi_gest_project/data/services/funcionarios/mapeamento_funcionario_repository.dart';
 import 'package:epi_gest_project/domain/models/filters/funcionario_filter_model.dart';
 import 'package:epi_gest_project/domain/models/funcionarios/funcionario_model.dart';
-import 'package:epi_gest_project/domain/models/funcionarios/mapeamento_funcionario_model.dart';
+import 'package:epi_gest_project/ui/employees/controllers/employees_page_controller.dart';
 import 'package:epi_gest_project/ui/employees/widget/employee_drawer.dart';
 import 'package:epi_gest_project/ui/employees/widget/employees_data_table.dart';
 import 'package:epi_gest_project/ui/employees/widget/employees_filters.dart';
@@ -43,42 +40,20 @@ class _EmployeesPageState extends State<EmployeesPage> {
 
   Future<void> _loadEmployees() async {
     try {
-      final funcRepo = Provider.of<FuncionarioRepository>(
+      final controller = Provider.of<EmployeesPageController>(
         context,
         listen: false,
       );
-      final mapFuncRepo = Provider.of<MapeamentoFuncionarioRepository>(
-        context,
-        listen: false,
-      );
-
-      final results = await Future.wait([
-        funcRepo.getAllFuncionarios(),
-        mapFuncRepo.getAllRelations(),
-      ]);
-
-      final employees = results[0] as List<FuncionarioModel>;
-      final mappings = results[1] as List<MapeamentoFuncionarioModel>;
-
-      final mappingMap = <String, String>{};
-      final mappingNames = <String>{};
-      for (var map in mappings) {
-        if (map.funcionario.id != null) {
-          mappingMap[map.funcionario.id!] = map.mapeamento.nomeMapeamento;
-          mappingNames.add(map.mapeamento.nomeMapeamento);
-        }
-      }
+      final result = await controller.carregarDados();
 
       if (mounted) {
         setState(() {
-          _allEmployees = employees;
-          _employeeMappingMap = mappingMap;
-          _availableMappings = mappingNames.toList()..sort();
+          _allEmployees = result.funcionarios;
+          _employeeMappingMap = result.mapeamentosPorFuncionario;
+          _availableMappings = result.mapeamentosDisponiveis;
           _applyFilters(_appliedFilters, updateState: false);
         });
       }
-    } on AppwriteException catch (e) {
-      throw Exception('Falha ao carregar funcionários: ${e.message}');
     } catch (e) {
       throw Exception('Ocorreu um erro inesperado: ${e.toString()}');
     }
@@ -100,60 +75,18 @@ class _EmployeesPageState extends State<EmployeesPage> {
     FuncionarioFilterModel filters, {
     bool updateState = true,
   }) {
+    final controller = Provider.of<EmployeesPageController>(
+      context,
+      listen: false,
+    );
+
     void performFilter() {
       _appliedFilters = filters;
-      if (filters.isEmpty) {
-        _filteredEmployees = List.from(_allEmployees);
-        return;
-      }
-      _filteredEmployees = _allEmployees.where((employee) {
-        // Filtro por Nome
-        if (filters.nome != null &&
-            !employee.nomeFunc.toLowerCase().contains(
-              filters.nome!.toLowerCase(),
-            )) {
-          return false;
-        }
-
-        // Filtro por Matrícula
-        if (filters.matricula != null &&
-            !employee.matricula.toLowerCase().contains(
-              filters.matricula!.toLowerCase(),
-            )) {
-          return false;
-        }
-
-        // Filtro por Status
-        if (filters.status != null && filters.status!.isNotEmpty) {
-          final isAtivo = filters.status!.contains('Ativo');
-          final isInativo = filters.status!.contains('Inativo');
-
-          if (isAtivo && !isInativo && !employee.statusAtivo) return false;
-          if (isInativo && !isAtivo && employee.statusAtivo) return false;
-        }
-
-        // Filtro por Data
-        if (filters.dataEntrada != null) {
-          final fDate = filters.dataEntrada!;
-          final eDate = employee.dataEntrada;
-          if (eDate.year != fDate.year ||
-              eDate.month != fDate.month ||
-              eDate.day != fDate.day) {
-            return false;
-          }
-        }
-
-        // Filtro por Mapeamento
-        if (filters.mapeamentos != null && filters.mapeamentos!.isNotEmpty) {
-          final employeeMapping = _employeeMappingMap[employee.id];
-          if (employeeMapping == null ||
-              !filters.mapeamentos!.contains(employeeMapping)) {
-            return false;
-          }
-        }
-
-        return true;
-      }).toList();
+      _filteredEmployees = controller.aplicarFiltros(
+        funcionarios: _allEmployees,
+        filtros: _appliedFilters,
+        mapeamentosPorFuncionario: _employeeMappingMap,
+      );
     }
 
     if (updateState) {
@@ -292,12 +225,12 @@ class _EmployeesPageState extends State<EmployeesPage> {
 
     if (confirm == true) {
       if (!mounted) return;
-      final repository = Provider.of<FuncionarioRepository>(
+      final controller = Provider.of<EmployeesPageController>(
         context,
         listen: false,
       );
       try {
-        await repository.inactivateEmployee(
+        await controller.inativarFuncionario(
           employee.id!,
           motivo: _motivoController.text.trim().isNotEmpty
               ? _motivoController.text.trim()
@@ -344,12 +277,12 @@ class _EmployeesPageState extends State<EmployeesPage> {
 
     if (confirm == true) {
       if (!mounted) return;
-      final repository = Provider.of<FuncionarioRepository>(
+      final controller = Provider.of<EmployeesPageController>(
         context,
         listen: false,
       );
       try {
-        await repository.activateEmployee(employee.id!);
+        await controller.ativarFuncionario(employee.id!);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Funcionário ativado com sucesso!'),

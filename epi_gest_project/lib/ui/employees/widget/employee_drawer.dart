@@ -1,7 +1,4 @@
-import 'package:appwrite/appwrite.dart' as appwrite;
-import 'package:epi_gest_project/data/services/funcionarios/funcionario_repository.dart';
 import 'package:epi_gest_project/data/services/organizational_structure/mapeamento_epi_repository.dart';
-import 'package:epi_gest_project/data/services/funcionarios/mapeamento_funcionario_repository.dart';
 import 'package:epi_gest_project/data/services/organizational_structure/turno_repository.dart';
 import 'package:epi_gest_project/data/services/organizational_structure/unidade_repository.dart';
 import 'package:epi_gest_project/data/services/organizational_structure/vinculo_repository.dart';
@@ -11,6 +8,7 @@ import 'package:epi_gest_project/domain/models/funcionarios/mapeamento_funcionar
 import 'package:epi_gest_project/domain/models/organizational_structure/turno_model.dart';
 import 'package:epi_gest_project/domain/models/organizational_structure/unidade_model.dart';
 import 'package:epi_gest_project/domain/models/organizational_structure/vinculo_model.dart';
+import 'package:epi_gest_project/ui/employees/controllers/employee_core_controller.dart';
 import 'package:epi_gest_project/ui/employees/widget/employee_form_sections.dart';
 import 'package:epi_gest_project/ui/widgets/base_drawer.dart';
 import 'package:epi_gest_project/ui/widgets/form_fields.dart';
@@ -133,7 +131,7 @@ class _EmployeeDrawerState extends State<EmployeeDrawer>
         listen: false,
       );
       final unitRepo = Provider.of<UnidadeRepository>(context, listen: false);
-      final mapFuncRepo = Provider.of<MapeamentoFuncionarioRepository>(
+      final coreController = Provider.of<EmployeeCoreController>(
         context,
         listen: false,
       );
@@ -148,7 +146,7 @@ class _EmployeeDrawerState extends State<EmployeeDrawer>
       if (!mounted) return;
 
       if ((_isEditing || _isViewing) && widget.employeeToEdit?.id != null) {
-        _currentVinculo = await mapFuncRepo.getByFuncionarioId(
+        _currentVinculo = await coreController.buscarMapeamentoAtual(
           widget.employeeToEdit!.id!,
         );
       }
@@ -645,13 +643,12 @@ class _EmployeeDrawerState extends State<EmployeeDrawer>
 
     setState(() => _isSaving = true);
 
-    final funcRepo = Provider.of<FuncionarioRepository>(context, listen: false);
-    final mapFuncRepo = Provider.of<MapeamentoFuncionarioRepository>(
-      context,
-      listen: false,
-    );
-
     try {
+      final coreController = Provider.of<EmployeeCoreController>(
+        context,
+        listen: false,
+      );
+
       final employee = FuncionarioModel(
         id: _isEditing ? widget.employeeToEdit!.id : null,
         matricula: _controllers['matricula']!.text.trim(),
@@ -680,48 +677,26 @@ class _EmployeeDrawerState extends State<EmployeeDrawer>
         motivoDesligamento: _controllers['motivoDesligamento']!.text.trim(),
       );
 
-      FuncionarioModel savedEmployee;
-      if (_isEditing) {
-        savedEmployee = await funcRepo.update(employee.id!, employee.toMap());
-      } else {
-        savedEmployee = await funcRepo.create(employee);
-      }
+      final savedEmployee = await coreController.salvarFuncionario(
+        funcionario: employee,
+        isEditing: _isEditing,
+      );
 
       final mapText = _controllers['mapeamento']!.text.trim();
       final unitText = _controllers['unidade']!.text.trim();
 
-      if (mapText.isNotEmpty && unitText.isNotEmpty) {
-        final mapObj = _mapeamentosDisponiveis.firstWhere(
-          (m) => m.nomeMapeamento == mapText,
-        );
-        final unitObj = _unidadesDisponiveis.firstWhere(
-          (u) => u.nomeUnidade == unitText,
-        );
-
-        if (_currentVinculo != null) {
-          final newVinculoData = {
-            'mapeamento_id': mapObj.id,
-            'unidade_id': unitObj.id,
-          };
-          await mapFuncRepo.update(_currentVinculo!.id!, newVinculoData);
-        } else {
-          final newVinculo = MapeamentoFuncionarioModel(
-            funcionario: savedEmployee,
-            mapeamento: mapObj,
-            unidade: unitObj,
-          );
-          await mapFuncRepo.create(newVinculo);
-        }
-      } else if (_currentVinculo != null &&
-          (mapText.isEmpty || unitText.isEmpty)) {
-        await mapFuncRepo.delete(_currentVinculo!.id!);
-      }
+      await coreController.sincronizarMapeamento(
+        funcionarioSalvo: savedEmployee,
+        currentVinculo: _currentVinculo,
+        mapeamentoNome: mapText,
+        unidadeNome: unitText,
+        mapeamentosDisponiveis: _mapeamentosDisponiveis,
+        unidadesDisponiveis: _unidadesDisponiveis,
+      );
 
       _showSuccessSnackBar('Dados salvos com sucesso!');
       if (mounted) Navigator.of(context).pop();
       widget.onSave?.call();
-    } on appwrite.AppwriteException catch (e) {
-      _showErrorSnackBar('Erro do Appwrite: ${e.message ?? "Ocorreu um erro"}');
     } catch (e) {
       _showErrorSnackBar('Erro inesperado: ${e.toString()}');
     } finally {

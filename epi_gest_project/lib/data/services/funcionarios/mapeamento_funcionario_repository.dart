@@ -2,9 +2,11 @@ import 'package:appwrite/appwrite.dart';
 import 'package:epi_gest_project/core/constants/appwrite_constants.dart';
 import 'package:epi_gest_project/data/services/base_repository.dart';
 import 'package:epi_gest_project/domain/models/funcionarios/mapeamento_funcionario_model.dart';
+import 'package:epi_gest_project/domain/repositories/funcionarios/mapeamento_funcionario_repository_contract.dart';
 
 class MapeamentoFuncionarioRepository
-    extends BaseRepository<MapeamentoFuncionarioModel> {
+    extends BaseRepository<MapeamentoFuncionarioModel>
+    implements MapeamentoFuncionarioRepositoryContract {
   MapeamentoFuncionarioRepository(TablesDB databases)
     : super(databases, AppwriteConstants.databaseFuncionarioEpi);
 
@@ -13,6 +15,7 @@ class MapeamentoFuncionarioRepository
     return MapeamentoFuncionarioModel.fromMap(map);
   }
 
+  @override
   Future<MapeamentoFuncionarioModel?> getByFuncionarioId(
     String funcionarioId,
   ) async {
@@ -29,6 +32,7 @@ class MapeamentoFuncionarioRepository
     }
   }
 
+  @override
   Future<List<MapeamentoFuncionarioModel>> getAllRelations() async {
     return await getAll([
       Query.select([
@@ -39,6 +43,26 @@ class MapeamentoFuncionarioRepository
         'mapeamento_id.epi_ids.*',
       ]),
     ]);
+  }
+
+  @override
+  Future<MapeamentoFuncionarioModel> createRelation(
+    MapeamentoFuncionarioModel relation,
+  ) {
+    return create(relation);
+  }
+
+  @override
+  Future<MapeamentoFuncionarioModel> updateRelation(
+    String relationId,
+    Map<String, dynamic> data,
+  ) {
+    return update(relationId, data);
+  }
+
+  @override
+  Future<void> deleteRelation(String relationId) {
+    return delete(relationId);
   }
 
   Future<int> countByMapeamentoId(String mapeamentoId) async {

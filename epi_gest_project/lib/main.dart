@@ -19,8 +19,19 @@ import 'package:epi_gest_project/data/services/organizational_structure/vinculo_
 import 'package:epi_gest_project/data/services/product_technical_registration/fornecedor_repository.dart';
 import 'package:epi_gest_project/data/services/product_technical_registration/marcas_repository.dart';
 import 'package:epi_gest_project/data/services/product_technical_registration/medida_repository.dart';
+import 'package:epi_gest_project/domain/repositories/funcionarios/funcionario_repository_contract.dart';
+import 'package:epi_gest_project/domain/repositories/funcionarios/mapeamento_funcionario_repository_contract.dart';
+import 'package:epi_gest_project/domain/use_cases/funcionarios/ativar_funcionario_use_case.dart';
+import 'package:epi_gest_project/domain/use_cases/funcionarios/buscar_mapeamento_funcionario_use_case.dart';
+import 'package:epi_gest_project/domain/use_cases/funcionarios/carregar_dados_funcionarios_use_case.dart';
+import 'package:epi_gest_project/domain/use_cases/funcionarios/filtrar_funcionarios_use_case.dart';
+import 'package:epi_gest_project/domain/use_cases/funcionarios/inativar_funcionario_use_case.dart';
+import 'package:epi_gest_project/domain/use_cases/funcionarios/salvar_funcionario_use_case.dart';
+import 'package:epi_gest_project/domain/use_cases/funcionarios/salvar_mapeamento_funcionario_use_case.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:epi_gest_project/ui/home/home_page.dart';
+import 'package:epi_gest_project/ui/employees/controllers/employee_core_controller.dart';
+import 'package:epi_gest_project/ui/employees/controllers/employees_page_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -38,6 +49,88 @@ void main() {
         Provider<VinculoRepository>(create: (_) => VinculoRepository(databases)),
         Provider<TurnoRepository>(create: (_) => TurnoRepository(databases)),
         Provider<MapeamentoFuncionarioRepository>(create: (_) => MapeamentoFuncionarioRepository(databases)),
+        ProxyProvider<FuncionarioRepository, FuncionarioRepositoryContract>(
+          update: (context, repository, previous) => repository,
+        ),
+        ProxyProvider<MapeamentoFuncionarioRepository, MapeamentoFuncionarioRepositoryContract>(
+          update: (context, repository, previous) => repository,
+        ),
+        ProxyProvider2<
+            FuncionarioRepositoryContract,
+            MapeamentoFuncionarioRepositoryContract,
+            CarregarDadosFuncionariosUseCase>(
+          update: (context, funcionarioRepository, mapeamentoRepository, previous) =>
+              CarregarDadosFuncionariosUseCase(
+            funcionarioRepository,
+            mapeamentoRepository,
+          ),
+        ),
+        Provider<FiltrarFuncionariosUseCase>(
+          create: (_) => const FiltrarFuncionariosUseCase(),
+        ),
+        ProxyProvider<FuncionarioRepositoryContract, InativarFuncionarioUseCase>(
+          update: (context, repository, previous) =>
+              InativarFuncionarioUseCase(repository),
+        ),
+        ProxyProvider<FuncionarioRepositoryContract, AtivarFuncionarioUseCase>(
+          update: (context, repository, previous) =>
+              AtivarFuncionarioUseCase(repository),
+        ),
+        ProxyProvider<FuncionarioRepositoryContract, SalvarFuncionarioUseCase>(
+          update: (context, repository, previous) =>
+              SalvarFuncionarioUseCase(repository),
+        ),
+        ProxyProvider<
+            MapeamentoFuncionarioRepositoryContract,
+            BuscarMapeamentoFuncionarioUseCase>(
+          update: (context, repository, previous) =>
+              BuscarMapeamentoFuncionarioUseCase(repository),
+        ),
+        ProxyProvider<
+            MapeamentoFuncionarioRepositoryContract,
+            SalvarMapeamentoFuncionarioUseCase>(
+          update: (context, repository, previous) =>
+              SalvarMapeamentoFuncionarioUseCase(repository),
+        ),
+        ProxyProvider4<
+            CarregarDadosFuncionariosUseCase,
+            FiltrarFuncionariosUseCase,
+            InativarFuncionarioUseCase,
+            AtivarFuncionarioUseCase,
+            EmployeesPageController>(
+          update: (
+            context,
+            carregarDadosUseCase,
+            filtrarFuncionariosUseCase,
+            inativarFuncionarioUseCase,
+            ativarFuncionarioUseCase,
+            previous,
+          ) =>
+              EmployeesPageController(
+            carregarDadosUseCase: carregarDadosUseCase,
+            filtrarFuncionariosUseCase: filtrarFuncionariosUseCase,
+            inativarFuncionarioUseCase: inativarFuncionarioUseCase,
+            ativarFuncionarioUseCase: ativarFuncionarioUseCase,
+          ),
+        ),
+        ProxyProvider3<
+            SalvarFuncionarioUseCase,
+            BuscarMapeamentoFuncionarioUseCase,
+            SalvarMapeamentoFuncionarioUseCase,
+            EmployeeCoreController>(
+          update: (
+            context,
+            salvarFuncionarioUseCase,
+            buscarMapeamentoUseCase,
+            salvarMapeamentoUseCase,
+            previous,
+          ) =>
+              EmployeeCoreController(
+            salvarFuncionarioUseCase: salvarFuncionarioUseCase,
+            buscarMapeamentoUseCase: buscarMapeamentoUseCase,
+            salvarMapeamentoUseCase: salvarMapeamentoUseCase,
+          ),
+        ),
         Provider<EpiRepository>(create: (_) => EpiRepository(databases)),
 
         Provider<EntradasEpiRepository>(create: (_) => EntradasEpiRepository(databases)),
