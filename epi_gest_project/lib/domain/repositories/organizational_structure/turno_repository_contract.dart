@@ -4,4 +4,8 @@ abstract class TurnoRepositoryContract {
   Future<List<TurnoModel>> getAllTurnos();
 
   Future<TurnoModel> createTurno(TurnoModel turno);
+
+  Future<TurnoModel> updateTurno(TurnoModel turno);
+
+  Future<void> updateTurnoStatus(String rowId, bool status);
 }

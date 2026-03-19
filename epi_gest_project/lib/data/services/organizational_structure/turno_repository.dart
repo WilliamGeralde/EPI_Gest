@@ -22,4 +22,19 @@ class TurnoRepository extends BaseRepository<TurnoModel> implements TurnoReposit
   Future<TurnoModel> createTurno(TurnoModel turno) {
     return create(turno);
   }
+
+  @override
+  Future<TurnoModel> updateTurno(TurnoModel turno) {
+    final id = turno.id;
+    if (id == null || id.isEmpty) {
+      throw Exception('Turno sem id para atualizacao.');
+    }
+
+    return update(id, turno.toMap());
+  }
+
+  @override
+  Future<void> updateTurnoStatus(String rowId, bool status) async {
+    await update(rowId, {'status': status});
+  }
 }

@@ -1,6 +1,5 @@
-import 'package:appwrite/appwrite.dart';
-import 'package:epi_gest_project/data/services/organizational_structure/vinculo_repository.dart';
 import 'package:epi_gest_project/domain/models/organizational_structure/vinculo_model.dart';
+import 'package:epi_gest_project/ui/organizational_structure/controllers/vinculo_controller.dart';
 import 'package:epi_gest_project/ui/widgets/base_drawer.dart';
 import 'package:epi_gest_project/ui/widgets/form_fields.dart';
 import 'package:flutter/material.dart';
@@ -57,17 +56,18 @@ class _VinculoDrawerState extends State<VinculoDrawer> {
     setState(() => _isSaving = true);
 
     final vinculoModel = VinculoModel(
+      id: widget.vinculoToEdit?.id,
       nomeVinculo: _nomeVinculoController.text.trim(),
     );
 
     try {
-      final repository = Provider.of<VinculoRepository>(context, listen: false);
+      final controller = Provider.of<VinculoController>(context, listen: false);
+      final vinculoSalvo = await controller.salvarVinculo(
+        vinculo: vinculoModel,
+        isEditing: _isEditing,
+      );
 
-      if (widget.vinculoToEdit != null) {
-        await repository.update(
-          widget.vinculoToEdit!.id!,
-          vinculoModel.toMap(),
-        );
+      if (_isEditing) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Vinculo atualizado com sucesso!'),
@@ -75,7 +75,6 @@ class _VinculoDrawerState extends State<VinculoDrawer> {
           ),
         );
       } else {
-        await repository.create(vinculoModel);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Vinculo criado com sucesso!'),
@@ -84,15 +83,8 @@ class _VinculoDrawerState extends State<VinculoDrawer> {
         );
       }
 
-      widget.onSave(vinculoModel);
+      widget.onSave(vinculoSalvo);
       widget.onClose();
-    } on AppwriteException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao salvar: ${e.message}'),
-          backgroundColor: Colors.red,
-        ),
-      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

@@ -1,5 +1,5 @@
-import 'package:epi_gest_project/data/services/organizational_structure/unidade_repository.dart';
 import 'package:epi_gest_project/domain/models/organizational_structure/unidade_model.dart';
+import 'package:epi_gest_project/ui/organizational_structure/controllers/unidade_controller.dart';
 import 'package:epi_gest_project/ui/organizational_structure/widgets/unidade/unidade_drawer.dart';
 import 'package:epi_gest_project/ui/widgets/build_empty.dart';
 import 'package:epi_gest_project/ui/widgets/create_type_card.dart';
@@ -31,23 +31,13 @@ class UnidadeWidgetState extends State<UnidadeWidget> {
     });
 
     try {
-      final repository = Provider.of<UnidadeRepository>(context, listen: false);
-      final result = await repository.getAllUnidades();
-
-      result.sort((a, b) {
-        if (a.tipoUnidade == 'Matriz' && b.tipoUnidade != 'Matriz') {
-          return -1; // a vem primeiro
-        } else if (a.tipoUnidade != 'Matriz' && b.tipoUnidade == 'Matriz') {
-          return 1; // b vem primeiro
-        } else {
-          // Se ambos forem iguais (ambas filiais ou ambas matrizes - improvável), ordena por nome
-          return a.nomeUnidade.compareTo(b.nomeUnidade);
-        }
-      });
+      final controller = Provider.of<UnidadeController>(context, listen: false);
+      final result = await controller.carregarUnidades();
+      final unidadesOrdenadas = controller.ordenarUnidades(result);
 
       if (mounted) {
         setState(() {
-          _unidades = result;
+          _unidades = unidadesOrdenadas;
           _isLoading = false;
         });
       }
@@ -110,9 +100,8 @@ class UnidadeWidgetState extends State<UnidadeWidget> {
     }
 
     try {
-      final repository = Provider.of<UnidadeRepository>(context, listen: false);
-
-      await repository.update(unidade.id!, {'status': novoStatus});
+      final controller = Provider.of<UnidadeController>(context, listen: false);
+      await controller.atualizarStatusUnidade(unidade.id!, novoStatus);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

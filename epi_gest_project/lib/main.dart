@@ -35,10 +35,22 @@ import 'package:epi_gest_project/domain/use_cases/funcionarios/filtrar_funcionar
 import 'package:epi_gest_project/domain/use_cases/funcionarios/inativar_funcionario_use_case.dart';
 import 'package:epi_gest_project/domain/use_cases/funcionarios/salvar_funcionario_use_case.dart';
 import 'package:epi_gest_project/domain/use_cases/funcionarios/salvar_mapeamento_funcionario_use_case.dart';
+import 'package:epi_gest_project/domain/use_cases/organizational_structure/atualizar_status_turno_use_case.dart';
+import 'package:epi_gest_project/domain/use_cases/organizational_structure/atualizar_status_unidade_use_case.dart';
+import 'package:epi_gest_project/domain/use_cases/organizational_structure/atualizar_status_vinculo_use_case.dart';
+import 'package:epi_gest_project/domain/use_cases/organizational_structure/carregar_turnos_use_case.dart';
+import 'package:epi_gest_project/domain/use_cases/organizational_structure/carregar_unidades_use_case.dart';
+import 'package:epi_gest_project/domain/use_cases/organizational_structure/carregar_vinculos_use_case.dart';
+import 'package:epi_gest_project/domain/use_cases/organizational_structure/salvar_turno_use_case.dart';
+import 'package:epi_gest_project/domain/use_cases/organizational_structure/salvar_unidade_use_case.dart';
+import 'package:epi_gest_project/domain/use_cases/organizational_structure/salvar_vinculo_use_case.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:epi_gest_project/ui/home/home_page.dart';
 import 'package:epi_gest_project/ui/employees/controllers/employee_core_controller.dart';
 import 'package:epi_gest_project/ui/employees/controllers/employees_page_controller.dart';
+import 'package:epi_gest_project/ui/organizational_structure/controllers/turno_controller.dart';
+import 'package:epi_gest_project/ui/organizational_structure/controllers/unidade_controller.dart';
+import 'package:epi_gest_project/ui/organizational_structure/controllers/vinculo_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -67,6 +79,65 @@ void main() {
         ),
         ProxyProvider<VinculoRepository, VinculoRepositoryContract>(
           update: (context, repository, previous) => repository,
+        ),
+        ProxyProvider<TurnoRepositoryContract, CarregarTurnosUseCase>(
+          update: (context, repository, previous) =>
+              CarregarTurnosUseCase(repository),
+        ),
+        ProxyProvider<TurnoRepositoryContract, SalvarTurnoUseCase>(
+          update: (context, repository, previous) => SalvarTurnoUseCase(repository),
+        ),
+        ProxyProvider<TurnoRepositoryContract, AtualizarStatusTurnoUseCase>(
+          update: (context, repository, previous) =>
+              AtualizarStatusTurnoUseCase(repository),
+        ),
+        ProxyProvider3<
+            CarregarTurnosUseCase,
+            SalvarTurnoUseCase,
+            AtualizarStatusTurnoUseCase,
+            TurnoController>(
+          update: (
+            context,
+            carregarTurnosUseCase,
+            salvarTurnoUseCase,
+            atualizarStatusTurnoUseCase,
+            previous,
+          ) =>
+              TurnoController(
+            carregarTurnosUseCase: carregarTurnosUseCase,
+            salvarTurnoUseCase: salvarTurnoUseCase,
+            atualizarStatusTurnoUseCase: atualizarStatusTurnoUseCase,
+          ),
+        ),
+        ProxyProvider<VinculoRepositoryContract, CarregarVinculosUseCase>(
+          update: (context, repository, previous) =>
+              CarregarVinculosUseCase(repository),
+        ),
+        ProxyProvider<VinculoRepositoryContract, SalvarVinculoUseCase>(
+          update: (context, repository, previous) =>
+              SalvarVinculoUseCase(repository),
+        ),
+        ProxyProvider<VinculoRepositoryContract, AtualizarStatusVinculoUseCase>(
+          update: (context, repository, previous) =>
+              AtualizarStatusVinculoUseCase(repository),
+        ),
+        ProxyProvider3<
+            CarregarVinculosUseCase,
+            SalvarVinculoUseCase,
+            AtualizarStatusVinculoUseCase,
+            VinculoController>(
+          update: (
+            context,
+            carregarVinculosUseCase,
+            salvarVinculoUseCase,
+            atualizarStatusVinculoUseCase,
+            previous,
+          ) =>
+              VinculoController(
+            carregarVinculosUseCase: carregarVinculosUseCase,
+            salvarVinculoUseCase: salvarVinculoUseCase,
+            atualizarStatusVinculoUseCase: atualizarStatusVinculoUseCase,
+          ),
         ),
         ProxyProvider2<
             FuncionarioRepositoryContract,
@@ -135,6 +206,35 @@ void main() {
         Provider<MapeamentoEpiRepository>(create: (_) => MapeamentoEpiRepository(databases)),
         ProxyProvider<UnidadeRepository, UnidadeRepositoryContract>(
           update: (context, repository, previous) => repository,
+        ),
+        ProxyProvider<UnidadeRepositoryContract, CarregarUnidadesUseCase>(
+          update: (context, repository, previous) =>
+              CarregarUnidadesUseCase(repository),
+        ),
+        ProxyProvider<UnidadeRepositoryContract, SalvarUnidadeUseCase>(
+          update: (context, repository, previous) => SalvarUnidadeUseCase(repository),
+        ),
+        ProxyProvider<UnidadeRepositoryContract, AtualizarStatusUnidadeUseCase>(
+          update: (context, repository, previous) =>
+              AtualizarStatusUnidadeUseCase(repository),
+        ),
+        ProxyProvider3<
+            CarregarUnidadesUseCase,
+            SalvarUnidadeUseCase,
+            AtualizarStatusUnidadeUseCase,
+            UnidadeController>(
+          update: (
+            context,
+            carregarUnidadesUseCase,
+            salvarUnidadeUseCase,
+            atualizarStatusUnidadeUseCase,
+            previous,
+          ) =>
+              UnidadeController(
+            carregarUnidadesUseCase: carregarUnidadesUseCase,
+            salvarUnidadeUseCase: salvarUnidadeUseCase,
+            atualizarStatusUnidadeUseCase: atualizarStatusUnidadeUseCase,
+          ),
         ),
         ProxyProvider<MapeamentoEpiRepository, MapeamentoEpiRepositoryContract>(
           update: (context, repository, previous) => repository,

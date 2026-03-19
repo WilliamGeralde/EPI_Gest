@@ -1,6 +1,5 @@
-import 'package:appwrite/appwrite.dart';
-import 'package:epi_gest_project/data/services/organizational_structure/turno_repository.dart';
 import 'package:epi_gest_project/domain/models/organizational_structure/turno_model.dart';
+import 'package:epi_gest_project/ui/organizational_structure/controllers/turno_controller.dart';
 import 'package:epi_gest_project/ui/widgets/base_drawer.dart';
 import 'package:epi_gest_project/ui/widgets/form_fields.dart';
 import 'package:epi_gest_project/ui/widgets/info_section.dart';
@@ -88,10 +87,13 @@ class _TurnoDrawerState extends State<TurnoDrawer> {
     );
 
     try {
-      final repository = Provider.of<TurnoRepository>(context, listen: false);
+      final controller = Provider.of<TurnoController>(context, listen: false);
+      final turnoSalvo = await controller.salvarTurno(
+        turno: turnoModel,
+        isEditing: _isEditing,
+      );
 
-      if (widget.turnoToEdit != null) {
-        await repository.update(widget.turnoToEdit!.id!, turnoModel.toMap());
+      if (_isEditing) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Turno atualizado com sucesso!'),
@@ -99,7 +101,6 @@ class _TurnoDrawerState extends State<TurnoDrawer> {
           ),
         );
       } else {
-        await repository.create(turnoModel);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Turno criado com sucesso!'),
@@ -108,15 +109,8 @@ class _TurnoDrawerState extends State<TurnoDrawer> {
         );
       }
 
-      widget.onSave(turnoModel);
+      widget.onSave(turnoSalvo);
       widget.onClose();
-    } on AppwriteException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao salvar: ${e.message}'),
-          backgroundColor: Colors.red,
-        ),
-      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

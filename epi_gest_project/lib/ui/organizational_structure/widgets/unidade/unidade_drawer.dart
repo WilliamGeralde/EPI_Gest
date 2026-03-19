@@ -1,6 +1,5 @@
-import 'package:appwrite/appwrite.dart';
-import 'package:epi_gest_project/data/services/organizational_structure/unidade_repository.dart';
 import 'package:epi_gest_project/domain/models/organizational_structure/unidade_model.dart';
+import 'package:epi_gest_project/ui/organizational_structure/controllers/unidade_controller.dart';
 import 'package:epi_gest_project/ui/utils/input_formatters.dart';
 import 'package:epi_gest_project/ui/widgets/base_drawer.dart';
 import 'package:epi_gest_project/ui/widgets/form_fields.dart';
@@ -76,11 +75,13 @@ class _UnidadeDrawerState extends State<UnidadeDrawer> {
     );
 
     try {
-      final repository = Provider.of<UnidadeRepository>(context, listen: false);
+      final controller = Provider.of<UnidadeController>(context, listen: false);
+      final unidadeSalva = await controller.salvarUnidade(
+        unidade: unitModel,
+        isEditing: _isEditing,
+      );
 
-      if (widget.unidadeToEdit != null) {
-        // Update
-        await repository.update(widget.unidadeToEdit!.id!, unitModel.toMap());
+      if (_isEditing) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Unidade atualizada com sucesso!'),
@@ -88,8 +89,6 @@ class _UnidadeDrawerState extends State<UnidadeDrawer> {
           ),
         );
       } else {
-        // Create
-        await repository.create(unitModel);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Unidade criada com sucesso!'),
@@ -98,15 +97,8 @@ class _UnidadeDrawerState extends State<UnidadeDrawer> {
         );
       }
 
-      widget.onSave(unitModel);
+      widget.onSave(unidadeSalva);
       widget.onClose();
-    } on AppwriteException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao salvar: ${e.message}'),
-          backgroundColor: Colors.red,
-        ),
-      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

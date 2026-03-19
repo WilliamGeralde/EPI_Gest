@@ -19,6 +19,26 @@ class UnidadeRepository extends BaseRepository<UnidadeModel>
     return await getAll([]);
   }
 
+  @override
+  Future<UnidadeModel> createUnidade(UnidadeModel unidade) {
+    return create(unidade);
+  }
+
+  @override
+  Future<UnidadeModel> updateUnidade(UnidadeModel unidade) {
+    final id = unidade.id;
+    if (id == null || id.isEmpty) {
+      throw Exception('Unidade sem id para atualizacao.');
+    }
+
+    return update(id, unidade.toMap());
+  }
+
+  @override
+  Future<void> updateUnidadeStatus(String rowId, bool status) async {
+    await update(rowId, {'status': status});
+  }
+
   Future<void> inativarUnidade(String rowId) async {
     try {
       await update(rowId, {'status': false});

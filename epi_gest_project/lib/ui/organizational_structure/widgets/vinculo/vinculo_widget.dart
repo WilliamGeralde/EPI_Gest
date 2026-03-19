@@ -1,5 +1,5 @@
-import 'package:epi_gest_project/data/services/organizational_structure/vinculo_repository.dart';
 import 'package:epi_gest_project/domain/models/organizational_structure/vinculo_model.dart';
+import 'package:epi_gest_project/ui/organizational_structure/controllers/vinculo_controller.dart';
 import 'package:epi_gest_project/ui/organizational_structure/widgets/vinculo/vinculo_drawer.dart';
 import 'package:epi_gest_project/ui/widgets/build_empty.dart';
 import 'package:epi_gest_project/ui/widgets/create_type_card.dart';
@@ -31,8 +31,8 @@ class VinculoWidgetState extends State<VinculoWidget> {
     });
 
     try {
-      final repository = Provider.of<VinculoRepository>(context, listen: false);
-      final result = await repository.getAllVinculos();
+      final controller = Provider.of<VinculoController>(context, listen: false);
+      final result = await controller.carregarVinculos();
 
       if (mounted) {
         setState(() {
@@ -99,9 +99,8 @@ class VinculoWidgetState extends State<VinculoWidget> {
     }
 
     try {
-      final repository = Provider.of<VinculoRepository>(context, listen: false);
-
-      await repository.update(vinculo.id!, {'status': novoStatus});
+      final controller = Provider.of<VinculoController>(context, listen: false);
+      await controller.atualizarStatusVinculo(vinculo.id!, novoStatus);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

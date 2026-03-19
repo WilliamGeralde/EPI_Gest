@@ -22,4 +22,19 @@ class VinculoRepository extends BaseRepository<VinculoModel> implements VinculoR
   Future<VinculoModel> createVinculo(VinculoModel vinculo) {
     return create(vinculo);
   }
+
+  @override
+  Future<VinculoModel> updateVinculo(VinculoModel vinculo) {
+    final id = vinculo.id;
+    if (id == null || id.isEmpty) {
+      throw Exception('Vinculo sem id para atualizacao.');
+    }
+
+    return update(id, vinculo.toMap());
+  }
+
+  @override
+  Future<void> updateVinculoStatus(String rowId, bool status) async {
+    await update(rowId, {'status': status});
+  }
 }

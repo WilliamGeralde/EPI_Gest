@@ -1,5 +1,5 @@
-import 'package:epi_gest_project/data/services/organizational_structure/turno_repository.dart';
 import 'package:epi_gest_project/domain/models/organizational_structure/turno_model.dart';
+import 'package:epi_gest_project/ui/organizational_structure/controllers/turno_controller.dart';
 import 'package:epi_gest_project/ui/organizational_structure/widgets/turno/turno_drawer.dart';
 import 'package:epi_gest_project/ui/widgets/build_empty.dart';
 import 'package:epi_gest_project/ui/widgets/create_type_card.dart';
@@ -31,8 +31,8 @@ class TurnoWidgetState extends State<TurnoWidget> {
     });
 
     try {
-      final repository = Provider.of<TurnoRepository>(context, listen: false);
-      final result = await repository.getAllTurnos();
+      final controller = Provider.of<TurnoController>(context, listen: false);
+      final result = await controller.carregarTurnos();
 
       if (mounted) {
         setState(() {
@@ -99,9 +99,8 @@ class TurnoWidgetState extends State<TurnoWidget> {
     }
 
     try {
-      final repository = Provider.of<TurnoRepository>(context, listen: false);
-
-      await repository.update(turno.id!, {'status': novoStatus});
+      final controller = Provider.of<TurnoController>(context, listen: false);
+      await controller.atualizarStatusTurno(turno.id!, novoStatus);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
