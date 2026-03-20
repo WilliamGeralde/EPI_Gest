@@ -1,5 +1,5 @@
-import 'package:epi_gest_project/data/services/ficha_entrega_repository.dart';
-import 'package:epi_gest_project/data/services/funcionarios/mapeamento_funcionario_repository.dart';
+import 'package:epi_gest_project/data/repositories/ficha_entrega_repository.dart';
+import 'package:epi_gest_project/data/repositories/funcionarios/mapeamento_funcionario_repository.dart';
 import 'package:epi_gest_project/domain/models/epi_model.dart';
 import 'package:epi_gest_project/domain/models/ficha_entrega_model.dart';
 import 'package:epi_gest_project/domain/models/ficha_epi_model.dart';

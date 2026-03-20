@@ -1,5 +1,5 @@
-import 'package:epi_gest_project/data/services/organizational_structure/unidade_repository.dart';
-import 'package:epi_gest_project/data/services/product_technical_registration/armazem_repository.dart';
+import 'package:epi_gest_project/data/repositories/organizational_structure/unidade_repository.dart';
+import 'package:epi_gest_project/data/repositories/product_technical_registration/armazem_repository.dart';
 import 'package:epi_gest_project/domain/models/organizational_structure/unidade_model.dart';
 import 'package:epi_gest_project/domain/models/product_technical_registration/armazem_model.dart';
 import 'package:epi_gest_project/ui/product_technical_registration/widgets/armazem/armazem_drawer.dart';

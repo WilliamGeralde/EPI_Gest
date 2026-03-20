@@ -1,6 +1,6 @@
-import 'package:epi_gest_project/data/services/entradas_repository.dart';
-import 'package:epi_gest_project/data/services/epi_repository.dart';
-import 'package:epi_gest_project/data/services/product_technical_registration/fornecedor_repository.dart';
+import 'package:epi_gest_project/data/repositories/entradas_repository.dart';
+import 'package:epi_gest_project/data/repositories/epi_repository.dart';
+import 'package:epi_gest_project/data/repositories/product_technical_registration/fornecedor_repository.dart';
 import 'package:epi_gest_project/domain/models/entradas_epi_model.dart';
 import 'package:epi_gest_project/domain/models/entradas_model.dart';
 import 'package:epi_gest_project/domain/models/epi_model.dart';

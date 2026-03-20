@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:appwrite/appwrite.dart' as appwrite;
-import 'package:epi_gest_project/data/services/epi_repository.dart';
-import 'package:epi_gest_project/data/services/organizational_structure/unidade_repository.dart';
-import 'package:epi_gest_project/data/services/product_technical_registration/categoria_repository.dart';
-import 'package:epi_gest_project/data/services/product_technical_registration/marcas_repository.dart';
-import 'package:epi_gest_project/data/services/product_technical_registration/medida_repository.dart';
+import 'package:epi_gest_project/data/repositories/epi_repository.dart';
+import 'package:epi_gest_project/data/repositories/organizational_structure/unidade_repository.dart';
+import 'package:epi_gest_project/data/repositories/product_technical_registration/categoria_repository.dart';
+import 'package:epi_gest_project/data/repositories/product_technical_registration/marcas_repository.dart';
+import 'package:epi_gest_project/data/repositories/product_technical_registration/medida_repository.dart';
 import 'package:epi_gest_project/domain/models/product_technical_registration/categoria_model.dart';
 import 'package:epi_gest_project/domain/models/epi_model.dart';
 import 'package:epi_gest_project/domain/models/product_technical_registration/marcas_model.dart';

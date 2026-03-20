@@ -1,4 +1,4 @@
-import 'package:epi_gest_project/config/theme_notifier.dart';
+import 'package:epi_gest_project/ui/config/theme_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 

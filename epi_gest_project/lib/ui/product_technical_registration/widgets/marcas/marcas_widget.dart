@@ -1,4 +1,4 @@
-import 'package:epi_gest_project/data/services/product_technical_registration/marcas_repository.dart';
+import 'package:epi_gest_project/data/repositories/product_technical_registration/marcas_repository.dart';
 import 'package:epi_gest_project/domain/models/product_technical_registration/marcas_model.dart';
 import 'package:epi_gest_project/ui/product_technical_registration/widgets/marcas/marcas_drawer.dart';
 import 'package:epi_gest_project/ui/widgets/build_empty.dart';

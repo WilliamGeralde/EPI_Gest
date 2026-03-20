@@ -1,5 +1,5 @@
 import 'package:appwrite/appwrite.dart';
-import 'package:epi_gest_project/data/services/epi_repository.dart';
+import 'package:epi_gest_project/data/repositories/epi_repository.dart';
 import 'package:epi_gest_project/domain/models/epi_model.dart';
 import 'package:epi_gest_project/domain/models/filters/epi_filter_model.dart';
 import 'package:epi_gest_project/ui/epis/widgets/entries/entry_page.dart';

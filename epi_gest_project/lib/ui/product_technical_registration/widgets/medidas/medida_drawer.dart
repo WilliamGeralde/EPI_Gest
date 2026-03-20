@@ -1,5 +1,5 @@
 import 'package:appwrite/appwrite.dart';
-import 'package:epi_gest_project/data/services/product_technical_registration/medida_repository.dart';
+import 'package:epi_gest_project/data/repositories/product_technical_registration/medida_repository.dart';
 import 'package:epi_gest_project/domain/models/product_technical_registration/medida_model.dart';
 import 'package:epi_gest_project/ui/widgets/base_drawer.dart';
 import 'package:epi_gest_project/ui/widgets/form_fields.dart';

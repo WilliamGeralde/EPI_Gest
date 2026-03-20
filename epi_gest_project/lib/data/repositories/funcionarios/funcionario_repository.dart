@@ -1,8 +1,8 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:epi_gest_project/domain/models/funcionarios/funcionario_model.dart';
 import 'package:epi_gest_project/domain/repositories/funcionarios/funcionario_repository_contract.dart';
-import '../base_repository.dart';
-import '../../../core/constants/appwrite_constants.dart';
+import 'package:epi_gest_project/data/repositories/base_repository.dart';
+import 'package:epi_gest_project/data/constants/appwrite_constants.dart';
 
 class FuncionarioRepository extends BaseRepository<FuncionarioModel>
     implements FuncionarioRepositoryContract {

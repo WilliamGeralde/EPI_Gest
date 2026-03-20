@@ -1,6 +1,6 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:epi_gest_project/domain/models/appwrite_model.dart';
-import '../../core/constants/appwrite_constants.dart';
+import 'package:epi_gest_project/data/constants/appwrite_constants.dart';
 
 abstract class BaseRepository<T extends AppWriteModel> {
   final TablesDB databases;

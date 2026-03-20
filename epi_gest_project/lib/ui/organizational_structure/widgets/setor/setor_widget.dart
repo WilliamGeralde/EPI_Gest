@@ -1,4 +1,4 @@
-import 'package:epi_gest_project/data/services/organizational_structure/setor_repository.dart';
+import 'package:epi_gest_project/data/repositories/organizational_structure/setor_repository.dart';
 import 'package:epi_gest_project/domain/models/organizational_structure/setor_model.dart';
 import 'package:epi_gest_project/ui/widgets/build_empty.dart';
 import 'package:epi_gest_project/ui/widgets/create_type_card.dart';
